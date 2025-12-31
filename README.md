@@ -60,6 +60,7 @@ spring.datasource.username=root
 spring.datasource.password=root
 
 **Postman:**
+
 GET:   http://localhost:8080/api/healthz
 
 POST:  http://localhost:8080/api/pastes
