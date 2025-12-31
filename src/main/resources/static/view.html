@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Paste</title>
+    <style>
+        body {
+            font-family: Arial;
+            width: 600px;
+            margin: 40px auto;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Paste Content</h2>
+<pre id="content">Loading...</pre>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+fetch("/api/pastes/" + id)
+    .then(res => {
+        if (!res.ok) throw new Error("Paste unavailable");
+        return res.json();
+    })
+    .then(data => {
+        document.getElementById("content").innerText = data.content;
+    })
+    .catch(() => {
+        document.getElementById("content").innerText = "Paste not found or expired";
+    });
+</script>
+
+</body>
+</html>

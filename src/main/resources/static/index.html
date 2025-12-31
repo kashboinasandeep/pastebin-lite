@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pastebin Lite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 600px;
+            margin: 40px auto;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+        }
+        input, button {
+            margin-top: 10px;
+            padding: 8px;
+            width: 100%;
+        }
+        .result {
+            margin-top: 15px;
+            color: green;
+        }
+        .error {
+            margin-top: 15px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Create Paste</h2>
+
+<textarea id="content" placeholder="Enter paste content"></textarea>
+
+<input type="number" id="ttl" placeholder="TTL seconds (optional)">
+
+<input type="number" id="maxViews" placeholder="Max views (optional)">
+
+<button onclick="createPaste()">Create Paste</button>
+
+<div class="result" id="result"></div>
+<div class="error" id="error"></div>
+
+<script>
+function createPaste() {
+    document.getElementById("result").innerText = "";
+    document.getElementById("error").innerText = "";
+
+    const content = document.getElementById("content").value;
+    const ttl = document.getElementById("ttl").value;
+    const maxViews = document.getElementById("maxViews").value;
+
+    const body = {
+        content: content
+    };
+
+    if (ttl) body.ttl_seconds = Number(ttl);
+    if (maxViews) body.max_views = Number(maxViews);
+
+    fetch("/api/pastes", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    })
+    .then(res => {
+        if (!res.ok) return res.json().then(err => { throw err; });
+        return res.json();
+    })
+    .then(data => {
+        const fullUrl = window.location.origin + data.url;
+        document.getElementById("result").innerHTML =
+            `Paste created:<br><a href="${fullUrl}" target="_blank">${fullUrl}</a>`;
+    })
+    .catch(err => {
+        document.getElementById("error").innerText = err.error || "Error creating paste";
+    });
+}
+</script>
+
+</body>
+</html>
